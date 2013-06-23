@@ -8,8 +8,8 @@ define(function(require, exports, module) {
 			this.attach();
 		},
 		attach: function() {
-			if (!this.$.contains(document.body, this.$el[0])) {
-				$(document.body).append(this.$el[0]);
+			if (!$.contains(document.body, this.$el[0])) {
+				$(document.body).append(this.$el);
 			}
 		}
 	});

@@ -2,10 +2,10 @@
  * @author XIAOCHEN GAO
  */
 define(function(require, exports, module) {
-	var Utils = require('src/util/Utils');
+	var Util = require('./Util');
 
 	function Class(o) {
-		if (Utils.isFunction(o)) {
+		if (Util.isFunction(o)) {
 			return classify(o);
 		}
 
@@ -89,19 +89,19 @@ define(function(require, exports, module) {
 	};
 
 	Class.implement = function(items) {
-		Utils.isArray(items) || (items = [items]);
+		Util.isArray(items) || (items = [items]);
 		var proto = this.prototype,
 			item;
 
 		while (item = items.shift()) {
-			Utils.mix(proto, item.prototype || item);
+			Util.mix(proto, item.prototype || item);
 		}
 
 		return this;
 	};
 
 	Class.statics = function(staticProperties) {
-		Utils.mix(this, staticProperties);
+		Util.mix(this, staticProperties);
 
 		return this;
 	};

@@ -1,6 +1,8 @@
 define(function(require, exports, module) {
 	'use strict';
 	var desktop = require('./Desktop'),
+		KeyEvent = require('./KeyEvent'),
+		View = require('./View'),
 		panels = {
 			'main_panel': new View(desktop, 'main_panel'),
 			'control_panel': new View(desktop, 'control_panel')
@@ -37,8 +39,12 @@ define(function(require, exports, module) {
 			var panel = panels[panelName];
 			panel && panel.hide();
 		},
+		dispathEvent: function(event) {
+			var ret = desktop.dispathEvent(event);
+			ret === 0 && event === KeyEvent.BACK_KEY && this.popTopPage();
+		},
 		start: function() {
-			this.pushPage('ProfileLoginPage', )
+			this.pushPage('ProfileLoginPage', 'main_panel');
 		}
 	}
 });

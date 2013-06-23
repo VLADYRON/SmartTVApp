@@ -12,7 +12,7 @@ define(function(require, exports, module) {
 				$el = $('#' + $el);
 			}
 			$el = $el.length ? $el : this.makeElement();
-			this.$el = this.$el;
+			this.$el = $el;
 			this.attach();
 			this.children = [];
 		},
@@ -25,8 +25,8 @@ define(function(require, exports, module) {
 			});
 		},
 		attach: function() {
-			if (!this.$.contains(this.container.$el[0], this.$el[0])) {
-				this.container.$el[0].append(this.$el[0]);
+			if (!$.contains(this.container.$el[0], this.$el[0])) {
+				this.container.$el.append(this.$el);
 			}
 		},
 		show: function() {

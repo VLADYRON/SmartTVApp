@@ -1,6 +1,7 @@
 define(function(require, exports, module) {
 	'use strict';
-	var desktop = require('./Desktop'),
+	var WindowManager = require('./WindowManager'),
+		KeyEvent = require('./KeyEvent'),
 		STATE_INIT = 0,
 		STATE_STARTED = 1,
 		state = STATE_INIT;
@@ -29,7 +30,7 @@ define(function(require, exports, module) {
 		'285': KeyEvent.SET_KEY,
 		'1111': KeyEvent.PVR_KEY,
 		'33879': KeyEvent.LONG_PVR_KEY,
-		'8': KeyEvent.BACK_KEY,
+		//'8': KeyEvent.BACK_KEY,
 		'24': KeyEvent.BACK_KEY,
 
 		'34': KeyEvent.PAGEDOWN_KEY,
@@ -68,19 +69,12 @@ define(function(require, exports, module) {
 
 		'84': KeyEvent.GUIDE_KEY,
 		'98': KeyEvent.RADIO_KEY,
-		'97': KeyEvent.MUTE_KEY,
+		//'97': KeyEvent.MUTE_KEY,
 		'24': KeyEvent.TT_KEY,
 		'25': KeyEvent.RESTART_KEY,
 		'88': KeyEvent.H_KEY,
-		'82': KeyEvent.MENU_KEY,
+		//'82': KeyEvent.MENU_KEY,
 		'91': KeyEvent.RECORD_KEY,
-		'124': KeyEvent.PAGEUP_KEY,
-		'125': KeyEvent.PAGEDOWN_KEY,
-		'117': KeyEvent.RED_KEY,
-		'118': KeyEvent.GREEN_KEY,
-		'119': KeyEvent.YELLOW_KEY,
-		'120': KeyEvent.BLUE_KEY,
-
 		'89': KeyEvent.TV_KEY,
 		//Y
 		'76': KeyEvent.POWER_KEY,
@@ -110,9 +104,9 @@ define(function(require, exports, module) {
 		// <
 		'190': KeyEvent.PAGEDOWN_KEY,
 		// >
-		'16': KeyEvent.FBWD_KEY,
-		// Shift
-		'17': KeyEvent.FFWD_KEY,
+		// '16': KeyEvent.FBWD_KEY,
+		// // Shift
+		// '17': KeyEvent.FFWD_KEY,
 		// Ctrl
 		'192': KeyEvent.PAUSEPLAY_KEY,
 		// `
@@ -126,7 +120,6 @@ define(function(require, exports, module) {
 		// F
 		'219': KeyEvent.STAR_KEY,
 		'221': KeyEvent.POUND_KEY,
-		'84': KeyEvent.TEST_KEY,
 		// T
 		'78': KeyEvent.FBWD_KEY,
 		// N
@@ -139,7 +132,7 @@ define(function(require, exports, module) {
 		'113': KeyEvent.LONG_PVR_KEY // F2
 	};
 
-	function parseEvent(e) {
+	function parseEvent(evt) {
 		var keyCode = evt.which || evt.keyCode,
 			event = REMOTE_EVENT_MAP[keyCode];
 		if (typeof event == 'undefined') {
@@ -153,7 +146,7 @@ define(function(require, exports, module) {
 
 	function handleKeyEvent(evt) {
 		var event = parseEvent(evt),
-			ret = desktop.dispathEvent(event);
+			ret = WindowManager.dispathEvent(event);
 	}
 
 	return {
