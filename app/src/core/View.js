@@ -6,14 +6,18 @@ define(function(require, exports, module) {
 	return Class.extend({
 		init: function(container, $el) {
 			this.container = container;
+			this.container.children.push(this);
 			if (Util.isString($el)) {
 				this.id = $el;
 				$el = $('#' + $el);
-				$el = $el.length ? $el : this.makeElement();
 			}
+			$el = $el.length ? $el : this.makeElement();
 			this.$el = this.$el;
 			this.attach();
 			this.children = [];
+		},
+		$: function(selector) {
+			return this.$el.find(selector);
 		},
 		makeElement: function() {
 			return $('<div>', {
@@ -55,10 +59,17 @@ define(function(require, exports, module) {
 			return 0;
 		},
 		destory: function() {
-			
+			this.$el.remove();
+			var index = this.container.children.indexOf(this);
+			index >= 0 && this.container.children.splice(index, 1);
+
+			this.children.forEach(function(child) {
+				child.onDestory();
+			});
+			this.onDestory();
 		},
 		onDestory: function() {
-			
+
 		}
 	});
 });
