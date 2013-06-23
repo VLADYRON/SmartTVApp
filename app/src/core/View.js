@@ -27,6 +27,7 @@ define(function(require, exports, module) {
 		},
 		show: function() {
 			this.$el.show();
+			this.active();
 		},
 		hide: function() {
 			this.$el.hide();
@@ -52,6 +53,12 @@ define(function(require, exports, module) {
 		},
 		handleEvent: function() {
 			return 0;
+		},
+		destory: function() {
+			
+		},
+		onDestory: function() {
+			
 		}
 	});
 });
