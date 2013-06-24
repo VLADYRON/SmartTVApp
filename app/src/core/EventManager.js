@@ -149,6 +149,40 @@ define(function(require, exports, module) {
 			ret = WindowManager.dispathEvent(event);
 	}
 
+	function detectDomMutation() {
+		// Firefox和Chrome早期版本中带有前缀
+		var MutationObserver = window.MutationObserver || window.WebKitMutationObserver || window.MozMutationObserver
+		var target = document.querySelector('#desktop');
+		var preFocusElement;
+
+		// 创建观察者对象
+		var observer = new MutationObserver(function(mutations) {
+			mutations.forEach(function(mutation) {
+				if (mutation.type == 'childList' && mutation.addedNodes && mutation.addedNodes.length) {
+					for (var i = 0, len = mutation.addedNodes.length; i < len; i++) {
+						$(mutation.addedNodes[i]).find('.focusable').on('click', function() {
+							preFocusElement && $(preFocusElement).removeClass('focused');
+							$(this).addClass('focused');
+						});
+					}
+				} else if (mutation.type == 'attributes' && mutation.attributeName == 'class' && ~mutation.oldValue.indexOf('focusable') && mutation.target.classList.contains("focused")) {
+					preFocusElement = mutation.target;
+				}
+			});
+		});
+
+		// 配置观察选项:
+		var config = {
+			childList: true,
+			attributes: true,
+			attributeOldValue: true,
+			subtree: true
+		}
+
+		// 传入目标节点和观察选项
+		observer.observe(target, config);
+	}
+
 	return {
 		start: function() {
 			if (state > STATE_INIT) {
@@ -156,6 +190,7 @@ define(function(require, exports, module) {
 			}
 
 			window.addEventListener('keydown', handleKeyEvent, false);
+			detectDomMutation();
 		}
 	}
 });
