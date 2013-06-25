@@ -155,15 +155,30 @@ define(function(require, exports, module) {
 		var target = document.querySelector('#desktop');
 		var preFocusElement;
 
+		function clickHandler() {
+			var $el = $(this),
+				$pre = $(preFocusElement),
+				focusHandler = $el.data('focusHandler') || (function() {
+					$el.addClass('focused');
+				}),
+				unFocusHandler = $pre && ($pre.data('unFocusHandler') || (function() {
+					$pre.removeClass('focused');
+				}));
+			unFocusHandler && unFocusHandler($pre);
+			focusHandler();
+		}
+
+		$('.focusable').on('click', clickHandler);
+
 		// 创建观察者对象
 		var observer = new MutationObserver(function(mutations) {
 			mutations.forEach(function(mutation) {
+				var $el;
 				if (mutation.type == 'childList' && mutation.addedNodes && mutation.addedNodes.length) {
 					for (var i = 0, len = mutation.addedNodes.length; i < len; i++) {
-						$(mutation.addedNodes[i]).find('.focusable').on('click', function() {
-							preFocusElement && $(preFocusElement).removeClass('focused');
-							$(this).addClass('focused');
-						});
+						$el = $(mutation.addedNodes[i]);
+						$el.find('.focusable').on('click', clickHandler);
+						$el.hasClass('focusable') && $el.on('click', clickHandler);
 					}
 				} else if (mutation.type == 'attributes' && mutation.attributeName == 'class' && ~mutation.oldValue.indexOf('focusable') && mutation.target.classList.contains("focused")) {
 					preFocusElement = mutation.target;

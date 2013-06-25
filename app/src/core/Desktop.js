@@ -6,6 +6,7 @@ define(function(require, exports, module) {
 			this.$el = $('#desktop');
 			this.children = [];
 			this.attach();
+			this.isActive = true;
 		},
 		attach: function() {
 			if (!$.contains(document.body, this.$el[0])) {
