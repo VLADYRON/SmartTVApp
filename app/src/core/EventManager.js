@@ -165,7 +165,10 @@ define(function(require, exports, module) {
 					$pre.removeClass('focused');
 				}));
 			unFocusHandler && unFocusHandler($pre);
-			focusHandler();
+			focusHandler($el);
+			handleKeyEvent({
+				which: '13'
+			});
 		}
 
 		$('.focusable').on('click', clickHandler);
