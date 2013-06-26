@@ -134,13 +134,8 @@ define(function(require, exports, module) {
 
 	function parseEvent(evt) {
 		var keyCode = evt.which || evt.keyCode,
-			event = REMOTE_EVENT_MAP[keyCode];
-		if (typeof event == 'undefined') {
-			event = KEYBOARD_EVENT_MAP[keyCode];
-		}
-		if (typeof event == 'undefined') {
-			return KeyEvent.NULL_KEY;
-		}
+			event = REMOTE_EVENT_MAP[keyCode] || KEYBOARD_EVENT_MAP[keyCode] || KeyEvent.NULL_KEY;
+		event.setBody(evt);
 		return event;
 	}
 
@@ -156,22 +151,35 @@ define(function(require, exports, module) {
 		var preFocusElement;
 
 		function clickHandler() {
-			var $el = $(this),
-				$pre = $(preFocusElement),
-				focusHandler = $el.data('focusHandler') || (function() {
-					$el.addClass('focused');
-				}),
-				unFocusHandler = $pre && ($pre.data('unFocusHandler') || (function() {
-					$pre.removeClass('focused');
-				}));
-			unFocusHandler && unFocusHandler($pre);
-			focusHandler($el);
 			handleKeyEvent({
-				which: '13'
+				which: '13',
+				target: this
 			});
 		}
 
-		$('.focusable').on('click', clickHandler);
+		function mouseEnter() {
+			var $el = $(this),
+				focusHandler = $el.data('focusHandler') ||
+			function() {
+				$el.addClass('focus');
+			};
+			focusHandler($el);
+		}
+
+		function mouseLeave() {
+			var $el = $(this),
+				unFocusHandler = $el.data('unFocusHandler') ||
+			function() {
+				$el.removeClass('focus')
+			};
+			unFocusHandler($el);
+		}
+
+		$('.focusable').on({
+			'click': clickHandler,
+			'mouseenter': mouseEnter,
+			'mouseleave': mouseLeave
+		});
 
 		// 创建观察者对象
 		var observer = new MutationObserver(function(mutations) {
@@ -180,11 +188,17 @@ define(function(require, exports, module) {
 				if (mutation.type == 'childList' && mutation.addedNodes && mutation.addedNodes.length) {
 					for (var i = 0, len = mutation.addedNodes.length; i < len; i++) {
 						$el = $(mutation.addedNodes[i]);
-						$el.find('.focusable').on('click', clickHandler);
-						$el.hasClass('focusable') && $el.on('click', clickHandler);
+						$el.find('.focusable').on({
+							'click': clickHandler,
+							'mouseenter': mouseEnter,
+							'mouseleave': mouseLeave
+						});
+						$el.hasClass('focusable') && $el.on({
+							'click': clickHandler,
+							'mouseenter': mouseEnter,
+							'mouseleave': mouseLeave
+						});
 					}
-				} else if (mutation.type == 'attributes' && mutation.attributeName == 'class' && ~mutation.oldValue.indexOf('focusable') && mutation.target.classList.contains("focused")) {
-					preFocusElement = mutation.target;
 				}
 			});
 		});
@@ -192,8 +206,6 @@ define(function(require, exports, module) {
 		// 配置观察选项:
 		var config = {
 			childList: true,
-			attributes: true,
-			attributeOldValue: true,
 			subtree: true
 		}
 

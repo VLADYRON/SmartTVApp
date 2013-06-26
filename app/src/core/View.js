@@ -47,6 +47,11 @@ define(function(require, exports, module) {
 			if (!this.isActive) {
 				return 0;
 			}
+			var body = event.getBody();
+			if (body.target && body.target != document.body && !$.contains(this.$el[0], body.target)) {
+				return 0;
+			}
+
 			var ret = 0;
 			$.each(this.children, function(index, child) {
 				ret = child.dispathEvent(event);
