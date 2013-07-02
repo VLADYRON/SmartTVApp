@@ -147,8 +147,6 @@ define(function(require, exports, module) {
 	function detectDomMutation() {
 		// Firefox和Chrome早期版本中带有前缀
 		var MutationObserver = window.MutationObserver || window.WebKitMutationObserver || window.MozMutationObserver
-		var target = document.querySelector('#desktop');
-		var preFocusElement;
 
 		function clickHandler() {
 			handleKeyEvent({
@@ -175,11 +173,29 @@ define(function(require, exports, module) {
 			unFocusHandler($el);
 		}
 
-		$('.focusable').on({
+		$('.focusable').addClass('SMART_TV_FOCUS').on({
 			'click': clickHandler,
 			'mouseenter': mouseEnter,
 			'mouseleave': mouseLeave
 		});
+
+		function animationHandler(event) {
+			if (event.animationName == 'nodeInserted') {
+				var $el = $(event.target);
+				!$el.hasClass('SMART_TV_FOCUS') && $el.addClass('SMART_TV_FOCUS').on({
+					'click': clickHandler,
+					'mouseenter': mouseEnter,
+					'mouseleave': mouseLeave
+				});
+			}
+		}
+
+		if (!MutationObserver) {
+			window.addEventListener('animationstart', animationHandler, false);
+			window.addEventListener('MSAnimationStart', animationHandler, false);
+			window.addEventListener('webkitAnimationStart', animationHandler, false);
+			return;
+		}
 
 		// 创建观察者对象
 		var observer = new MutationObserver(function(mutations) {
@@ -188,12 +204,12 @@ define(function(require, exports, module) {
 				if (mutation.type == 'childList' && mutation.addedNodes && mutation.addedNodes.length) {
 					for (var i = 0, len = mutation.addedNodes.length; i < len; i++) {
 						$el = $(mutation.addedNodes[i]);
-						$el.find('.focusable').on({
+						$el.find('.focusable').addClass('SMART_TV_FOCUS').on({
 							'click': clickHandler,
 							'mouseenter': mouseEnter,
 							'mouseleave': mouseLeave
 						});
-						$el.hasClass('focusable') && $el.on({
+						$el.hasClass('focusable') && $el.addClass('SMART_TV_FOCUS').on({
 							'click': clickHandler,
 							'mouseenter': mouseEnter,
 							'mouseleave': mouseLeave
@@ -210,6 +226,7 @@ define(function(require, exports, module) {
 		}
 
 		// 传入目标节点和观察选项
+		var target = document.querySelector('#desktop');
 		observer.observe(target, config);
 	}
 
