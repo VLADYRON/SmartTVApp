@@ -237,7 +237,35 @@ define(function(require, exports, module) {
 			}
 
 			window.addEventListener('keydown', handleKeyEvent, false);
-			detectDomMutation();
+			window.addEventListener('mouseover', function(e) {
+				if (e.target.classList.contains('focusable')) {
+					var $el = $(e.target),
+						focusHandler = $el.data('focusHandler') ||
+					function() {
+						$el.addClass('focus');
+					};
+					focusHandler($el);
+				}
+			}, false);
+			window.addEventListener('mouseout', function(e) {
+				if (e.target.classList.contains('focusable')) {
+					var $el = $(e.target),
+						unFocusHandler = $el.data('unFocusHandler') ||
+					function() {
+						$el.removeClass('focus')
+					};
+					unFocusHandler($el);
+				}
+			}, false);
+			window.addEventListener('click', function(e) {
+				if (e.target.classList.contains('focusable')) {
+					handleKeyEvent({
+						which: '13',
+						target: e.target
+					});
+				}
+			}, false);
+			//detectDomMutation();
 		}
 	}
 });
